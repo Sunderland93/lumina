@@ -6,7 +6,6 @@
 //===========================================
 #include <QSystemTrayIcon>
 #include <QDebug>
-#include <QSerialPortInfo>
 
 #include <LuminaSingleApplication.h>
 #include <LuminaThemes.h>
@@ -15,16 +14,12 @@
 
 #include "TrayIcon.h"
 int  main(int argc, char *argv[]) {
-   if(QSerialPortInfo::availablePorts().isEmpty()){
-     qDebug() << "No Serial Ports available!!!";
-     return 1;
-   }
    LTHEME::LoadCustomEnvSettings();
    LSingleApplication a(argc, argv, "lumina-terminal");
     if( !a.isPrimaryProcess() ){ return 0; } //poked the current process instead
 	
    //First make sure a system tray is available
-  qDebug() << "Checking for system tray";
+  /*qDebug() << "Checking for system tray";
    bool ready = false;
    for(int i=0; i<60 && !ready; i++){
       ready = QSystemTrayIcon::isSystemTrayAvailable();
@@ -36,7 +31,7 @@ int  main(int argc, char *argv[]) {
    if(!ready){
      qDebug() << "Could not find any available system tray after 5 minutes: exiting....";
      return 1;
-   }
+   }*/
    
    //Now go ahead and setup the app
    LuminaThemeEngine theme(&a);

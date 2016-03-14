@@ -618,6 +618,8 @@ void LSession::adjustWindowGeom(WId win, bool maximize){
     if(DEBUG){ 
       qDebug() << " - New Geom:" << geom << fgeom; 
     }
+    XCB->WM_Request_MoveResize_Window(win, geom);
+    /*
       //Need to use the frame origin point with the window size (for some reason - strange Fluxbox issue)
       XCB->MoveResizeWindow(win, QRect(fgeom.topLeft(), geom.size()) );
 
@@ -626,7 +628,7 @@ void LSession::adjustWindowGeom(WId win, bool maximize){
     if(nfgeom!=fgeom){
       if(DEBUG){ qDebug() << " -- Adjust again:" << fgeom; }
       XCB->MoveResizeWindow(win, geom);
-    }
+    }*/
   }
   
 }
@@ -748,6 +750,7 @@ void LSession::WindowPropertyEvent(){
     for(int i=0; i<newapps.length() && !TrayStopping; i++){
       if(!RunningApps.contains(newapps[i])){ 
         checkWin << newapps[i]; 
+	XCB->SelectInput(newapps[i]); //make sure we get property/focus events for this window
 	if(DEBUG){ qDebug() << "New Window - check geom in a moment:" << XCB->WindowClass(newapps[i]); }
 	QTimer::singleShot(50, this, SLOT(checkWindowGeoms()) );
       }

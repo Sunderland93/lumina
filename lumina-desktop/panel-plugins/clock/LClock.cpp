@@ -16,6 +16,8 @@ LClock::LClock(QWidget *parent, QString id, bool horizontal) : LPPlugin(parent, 
     button->setStyleSheet("font-weight: bold;");
     button->setPopupMode(QToolButton::DelayedPopup); //make sure it runs the update routine first
     button->setMenu(new QMenu());
+	//button->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
+	//this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Preferred);
     connect(button, SIGNAL(clicked()), this, SLOT(openMenu()));
     connect(button->menu(), SIGNAL(aboutToHide()), this, SIGNAL(MenuClosed()));
   calendar = new QCalendarWidget(this);
@@ -108,7 +110,10 @@ void LClock::updateFormats(){
   else if(timefmt.contains("m")){ timer->setInterval(2000); } //2 seconds
   else{ timer->setInterval(1000); } //unknown format - use 1 second interval
   datetimeorder = LSession::handle()->sessionSettings()->value("DateTimeOrder", "timeonly").toString().toLower();
+  //this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
   updateTime(true);
+  //Now fix the size of the widget with the new size hint
+  this->setFixedWidth( this->sizeHint().width() +6);
 }
 
 void LClock::updateMenu(){
@@ -189,48 +194,6 @@ void LClock::LocaleChange(){
       if(tmpC!=0 && !tmpC->isEmpty()){ TZMenu->addMenu(tmpC); }
     }
   }
-  
-  //qDebug() << "Found Time Zones:" << TZList.length();
-  /*QDateTime cur = QDateTime::currentDateTime();
-  
-  QMenu *tmpCM = 0;
-  QString ccat; //current category
-  QStringList catAbb;
-  for(int i=0; i<TZList.length(); i++){
-    QTimeZone tmp(TZList[i]);
-    QString abbr = tmp.abbreviation(cur);
-    if(abbr.startsWith("UTC")){ continue; } //skip all the manual options at the end of the list
-    if(QString(tmp.id()).section("/",0,0)!=ccat){
-      //New category - save the old one and start a new one
-      if(!catAbb.isEmpty()){ 
-	catAbb.sort();
-	QMenu *tmpM = new QMenu(this);
-	  tmpM->setTitle(ccat);
-	for(int j=0; j<catAbb.length(); j++){
-	  QAction *act = new QAction(catAbb[j].section("::::",3,3)+" ("+catAbb[j].section("::::",1,1)+")",this);
-	    act->setWhatsThis(catAbb[j].section("::::",2,2));
-	  tmpM->addAction(act);
-	}
-	TZMenu->addMenu(tmpM); 
-      }
-      ccat = QString(tmp.id()).section("/",0,0);
-      catAbb.clear();
-    }
-    if(!catAbb.filter("::::"+abbr+"::::").isEmpty()){ continue; } //duplicate timezone/abbreviation for this cat
-    catAbb << "::::"+abbr+"::::"+tmp.id()+"::::"+tmp.displayName(QTimeZone::GenericTime, QTimeZone::LongName); //add new abbreviation to the list
-  }
-  //Now add the last category to the menu
-  if(tmpCM!=0 && !catAbb.isEmpty()){ 
-    catAbb.sort();
-    QMenu *tmpM = new QMenu(this);
-      tmpM->setTitle(ccat);
-    for(int j=0; j<catAbb.length(); j++){
-	QAction *act = new QAction(catAbb[j].section("::::",3,3)+" ("+catAbb[j].section("::::",1,1)+")",this);
-	  act->setWhatsThis(catAbb[j].section("::::",2,2));
-	tmpM->addAction(act);
-    }
-    TZMenu->addMenu(tmpM); 
-  }*/
   
 }
 

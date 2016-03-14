@@ -8,10 +8,12 @@
 #define _LUMINA_DESKTOP_UTILITIES_TERMINAL_PROCESS_WIDGET_H
 
 #include <QTextEdit>
-#include <QProcess>
 #include <QKeyEvent>
-#include <QSerialPort>
-#include <QSerialPortInfo>
+#include <QResizeEvent>
+#include <QSocketNotifier>
+#include <QTimer>
+
+#include "TtyProcess.h"
 
 class TerminalWidget : public QTextEdit{
 	Q_OBJECT
@@ -22,8 +24,12 @@ public:
 	void aboutToClose();
 
 private:
-	//QSerialPort *PROC;
-	QProcess *PROC;
+	TTYProcess *PROC;
+
+	QSocketNotifier *sn;
+	
+	void applyData(QByteArray data); //overall data parsing
+	void applyANSI(QByteArray code); //individual code application
 
 private slots:
 	void UpdateText();
@@ -37,6 +43,7 @@ protected:
 	void mousePressEvent(QMouseEvent *ev);
 	void mouseDoubleClickEvent(QMouseEvent *ev);
 	void contextMenuEvent(QContextMenuEvent *ev);
+	void resizeEvent(QResizeEvent *ev);
 };
 
 #endif

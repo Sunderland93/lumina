@@ -20,6 +20,7 @@ LTaskButton::LTaskButton(QWidget *parent, bool smallDisplay) : LTBWidget(parent)
   this->setAutoRaise(false); //make sure these always look like buttons
   this->setContextMenuPolicy(Qt::CustomContextMenu);
   this->setFocusPolicy(Qt::NoFocus);
+  this->setSizePolicy(QSizePolicy::Maximum, QSizePolicy::Maximum);
   winMenu->setContextMenuPolicy(Qt::CustomContextMenu);
   connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(openActionMenu()) );
   connect(this, SIGNAL(clicked()), this, SLOT(buttonClicked()) );
@@ -111,11 +112,6 @@ void LTaskButton::UpdateButton(){
     LXCB::WINDOWVISIBILITY stat = WINLIST[i].status(true); //update the saved state for the window
     if(stat<LXCB::ACTIVE && WINLIST[i].windowID() == LSession::handle()->activeWindow()){ stat = LXCB::ACTIVE; }
     if(stat > showstate){ showstate = stat; } //higher priority
-    
-    /*if(stat==LXCB::ATTENTION){ showstate = stat; } //highest priority
-    else if( stat==LXCB::ACTIVE && showstate != LXCB::ATTENTION){ showstate = stat; } //next priority
-    else if( stat==LXCB::VISIBLE && showstate != LXCB::ATTENTION && showstate != LXCB::ACTIVE){ showstate = stat; }
-    else if(showstate == LXCB::INVISIBLE || showstate == LXCB::IGNORE){ showstate = stat; } //anything is the same/better*/
   }
   //Now setup the button appropriately
   // - visibility
@@ -126,8 +122,8 @@ void LTaskButton::UpdateButton(){
     //single window
     this->setPopupMode(QToolButton::DelayedPopup);
     this->setMenu(actMenu);
-    if(showText){ this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon); this->setText( this->fontMetrics().elidedText(WINLIST[0].text(), Qt::ElideRight,80) ); }
-    else if(noicon){ this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon); this->setText( this->fontMetrics().elidedText(cname, Qt::ElideRight ,80) ); }
+    if(showText){ this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon); this->setText( WINLIST[0].text()); }
+    else if(noicon){ this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon); this->setText( cname ); }
     else{ this->setToolButtonStyle(Qt::ToolButtonIconOnly); this->setText(""); }
     this->setToolTip(WINLIST[0].text());
   }else if(WINLIST.length() > 1){
@@ -135,7 +131,7 @@ void LTaskButton::UpdateButton(){
     this->setPopupMode(QToolButton::InstantPopup);
     this->setMenu(winMenu);
     this->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
-    if(noicon || showText){ this->setText( this->fontMetrics().elidedText(cname, Qt::ElideRight ,80) +" ("+QString::number(WINLIST.length())+")" ); }
+    if(noicon || showText){ "("+QString::number(WINLIST.length())+") "+cname; }
     else{ this->setText("("+QString::number(WINLIST.length())+")"); }
   }
   this->setState(showstate); //Make sure this is after the button setup so that it properly sets the margins/etc

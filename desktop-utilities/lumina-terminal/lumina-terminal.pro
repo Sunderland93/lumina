@@ -1,6 +1,6 @@
 TEMPLATE	= app
 LANGUAGE	= C++
-QT += core gui widgets network serialport
+QT += core gui widgets network
 CONFIG	+= qt warn_on release
 
 isEmpty(PREFIX) {
@@ -15,16 +15,18 @@ isEmpty(LIBPREFIX) {
 
 HEADERS	+= TrayIcon.h \
 		TermWindow.h \
-		TerminalWidget.h
+		TerminalWidget.h \
+		TtyProcess.h
 		
 SOURCES	+= main.cpp \
 		TrayIcon.cpp \
 		TermWindow.cpp \
-		TerminalWidget.cpp
+		TerminalWidget.cpp \
+		TtyProcess.cpp
 
 
 INCLUDEPATH += ../../libLumina $$PREFIX/include
-LIBS += -L../../libLumina -L$$LIBPREFIX -lLuminaUtils
+LIBS += -L../../libLumina -L$$LIBPREFIX -lLuminaUtils -lc
 
 isEmpty(QT5LIBDIR) {
  QT5LIBDIR = $$PREFIX/lib/qt5
